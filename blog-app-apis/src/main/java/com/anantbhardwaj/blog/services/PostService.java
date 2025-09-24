@@ -3,6 +3,7 @@ package com.anantbhardwaj.blog.services;
 import java.util.List;
 
 import com.anantbhardwaj.blog.payloads.PostDto;
+import com.anantbhardwaj.blog.payloads.PostResponse;
 
 public interface PostService {
 
@@ -16,7 +17,7 @@ public interface PostService {
 	PostDto getPostById(Integer postId);
 	
 	//Getall
-	List<PostDto> getAllPosts();
+	PostResponse getAllPosts(Integer PageNumber, Integer PageSize, String sortBy,String sortDir);
 	
 	//GetPost by Catgeory
 	List<PostDto> getPostbyCategory(Integer categoryId);

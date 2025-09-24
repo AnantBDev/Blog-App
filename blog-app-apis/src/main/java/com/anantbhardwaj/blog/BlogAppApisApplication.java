@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+//Task -24/9- Implement Pagination on Users - Done and categories
 //Anant-Already a configuration class as annotated with SpringBootApplication.Hence bean can be declared here 
 //or in config pkg. 
 @SpringBootApplication

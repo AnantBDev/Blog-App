@@ -5,11 +5,15 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.anantbhardwaj.blog.entities.User;
 import com.anantbhardwaj.blog.exceptions.*;
 import com.anantbhardwaj.blog.payloads.UserDto;
+import com.anantbhardwaj.blog.payloads.UserResponse;
 import com.anantbhardwaj.blog.repositories.UserRepository;
 import com.anantbhardwaj.blog.services.UserService;
 
@@ -56,11 +60,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserDto> getAllUsers() {
-		List<User> users=this.userRepo.findAll();
+	public UserResponse getAllUsers(Integer pageNumber, Integer pageSize) {
+		Pageable p=PageRequest.of(pageNumber, pageSize);
+		
+		Page<User> pagePost = this.userRepo.findAll(p);
+		List<User> users=pagePost.getContent();
+		
 		//used lambda stream APi to convert list of users to list of userDtos
 		List<UserDto> userDtos=users.stream().map(user->this.UserToDto(user)).collect(Collectors.toList());
-		return userDtos;
+		UserResponse userResponse=new UserResponse();
+		userResponse.setContent(userDtos);
+		userResponse.setPageNumber(pagePost.getNumber());
+		userResponse.setPageSize(pagePost.getSize());
+		userResponse.setTotalElements(pagePost.getTotalElements());
+		userResponse.setTotalPages(pagePost.getTotalPages());
+		userResponse.setLastPage(pagePost.isLast());
+		return userResponse;
 	}
 
 	@Override

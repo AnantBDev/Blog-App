@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.anantbhardwaj.blog.payloads.*;
 
@@ -46,8 +47,11 @@ public class UserController {
 	
 	//Get - Get User
 	@GetMapping("/")
-	public ResponseEntity<List<UserDto>> getAllUsers(){
-		return ResponseEntity.ok(this.userService.getAllUsers());
+	public ResponseEntity<UserResponse> getAllUsers(
+			@RequestParam(value="PageNumber",defaultValue = "0",required = false)Integer pageNumber,
+			@RequestParam(value = "PageSize", defaultValue = "3",required = false) Integer pageSize){
+		UserResponse userResponse = this.userService.getAllUsers(pageNumber, pageSize);
+		return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{userId}")

@@ -2,6 +2,7 @@ package com.anantbhardwaj.blog.controllers;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anantbhardwaj.blog.payloads.ApiResponse;
 import com.anantbhardwaj.blog.payloads.PostDto;
+import com.anantbhardwaj.blog.payloads.PostResponse;
 import com.anantbhardwaj.blog.services.PostService;
+
+//Pagination= Page Size+Page No-nearly implmented by Springboot
+//JpaReposiroty already extends PagingAndSorting Repository
+//Sorting by One field
+//http://localhost:8080/posts?pageSize=5&PageNo=2&SortBy=title
 
 @RestController
 @RequestMapping("/api/")
@@ -51,9 +59,14 @@ public class PostController {
 	
 	//GetAllPosts
 	@GetMapping("/posts")
-	public ResponseEntity<List<PostDto>> getAllPosts(){
-		List<PostDto> allPosts = this.postService.getAllPosts();
-		return new ResponseEntity<>(allPosts,HttpStatus.OK);
+	public ResponseEntity<PostResponse> getAllPosts(
+			@RequestParam(value="pageNumber",defaultValue="0",required=false) Integer pageNumber,
+			@RequestParam(value="pageSize",defaultValue="10",required=false)Integer pageSize,
+			@RequestParam(value="sortBy",defaultValue = "postId",required = false)String sortBy,
+			@RequestParam(value="sortDir",defaultValue = "ASC",required = false) String sortDir)
+	{
+		 PostResponse postResponse = this.postService.getAllPosts(pageNumber, pageSize,sortBy,sortDir);
+		return new ResponseEntity<PostResponse>(postResponse,HttpStatus.OK);
 	}
 	
 	

@@ -3,6 +3,7 @@ package com.anantbhardwaj.blog.services;
 import java.util.List;
 
 import com.anantbhardwaj.blog.payloads.UserDto;
+import com.anantbhardwaj.blog.payloads.UserResponse;
 //Not to be autowired as it is an interface
 public interface UserService {
 
@@ -12,7 +13,7 @@ public interface UserService {
 	
 	UserDto getUserById(Integer userId);
 	
-	List<UserDto> getAllUsers();
+	UserResponse getAllUsers(Integer PageNumber, Integer PageSize);
 	
 	void deleteUser(Integer userId);
 	

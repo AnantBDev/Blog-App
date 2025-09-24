@@ -1,12 +1,19 @@
 package com.anantbhardwaj.blog.services.impl;
 
 import java.util.Date;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
+
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.anantbhardwaj.blog.entities.Category;
@@ -14,10 +21,12 @@ import com.anantbhardwaj.blog.entities.Post;
 import com.anantbhardwaj.blog.entities.User;
 import com.anantbhardwaj.blog.exceptions.ResourceNotFoundException;
 import com.anantbhardwaj.blog.payloads.PostDto;
+import com.anantbhardwaj.blog.payloads.PostResponse;
 import com.anantbhardwaj.blog.repositories.CategoryRepo;
 import com.anantbhardwaj.blog.repositories.PostRepo;
 import com.anantbhardwaj.blog.repositories.UserRepository;
 import com.anantbhardwaj.blog.services.PostService;
+
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -77,11 +86,25 @@ public class PostServiceImpl implements PostService{
 
 	//getAllPosts
 	@Override
-	public List<PostDto> getAllPosts() {
-		List<Post> posts = this.postRepo.findAll();
+	public PostResponse getAllPosts(Integer pageNumber, Integer pageSize,String sortBy,String sortDir) {
+		//PageSize=No of posts on a particular page Number
+		//made sorting custom based
+		Sort sort=sortDir.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		Pageable p=PageRequest.of(pageNumber, pageSize, sort);
+		Page<Post> pagePost = this.postRepo.findAll(p);
+		List<Post> posts=pagePost.getContent();
+		
 		List<PostDto> postDtos = posts.stream().map(post-> 
 			this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList()); 
-		return postDtos;
+		PostResponse postResponse=new PostResponse();
+		postResponse.setContent(postDtos);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		return postResponse;
 	}
 
 	//getPostBycategory
